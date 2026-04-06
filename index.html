@@ -10,6 +10,9 @@
   <meta name="apple-mobile-web-app-title" content="YrWeather" />
   <title>YrWeather</title>
   <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
 </head>
@@ -29,6 +32,9 @@
       </div>
       <span id="city-name">Choose a city</span>
       <div id="topbar-right">
+        <button id="btn-install" class="icon-btn hidden" aria-label="Install app" title="Install YrWeather">
+          <svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5z"/><path d="M4 18h16v2H4z"/></svg>
+        </button>
         <button id="btn-accessibility" class="icon-btn" aria-label="Toggle accessibility mode" title="Accessibility mode (astigmatism-friendly)" aria-pressed="false">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><path d="M12 6c-3.3 0-6 .9-6 2l1 8h3l1 5h2l1-5h3l1-8c0-1.1-2.7-2-6-2z"/></svg>
         </button>

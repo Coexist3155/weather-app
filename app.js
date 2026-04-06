@@ -736,6 +736,29 @@ function openDayDetail(day, entries) {
 
 D.dayDetailClose.addEventListener('click', () => D.dayDetailSection.classList.add('hidden'));
 
+// ── PWA INSTALL PROMPT ───────────────────────────────────
+const btnInstall = document.getElementById('btn-install');
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  btnInstall.classList.remove('hidden');
+});
+
+btnInstall.addEventListener('click', async () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  if (outcome === 'accepted') btnInstall.classList.add('hidden');
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  btnInstall.classList.add('hidden');
+});
+
 // ── INIT ─────────────────────────────────────────────────
 function init() {
   applyTheme(localStorage.getItem('yrw-theme') || 'auto');
