@@ -571,8 +571,9 @@ function renderWeather(forecast, sunrise) {
   D.currentFeels.textContent = `Feels like ${feels}°C`;
 
   // Today H/L
+  const today = todayStr();
   const todayTemps = ts
-    .filter(t => t.time.slice(0, 10) === todayStr())
+    .filter(t => t.time.slice(0, 10) === today)
     .map(t => t.data.instant.details.air_temperature ?? 0);
   if (todayTemps.length) {
     D.currentHi.textContent = `H:${Math.round(Math.max(...todayTemps))}°`;
@@ -647,37 +648,37 @@ function renderDaily(ts) {
     (byDay[day] = byDay[day] || []).push(t);
   });
 
-  // Compute overall temperature range across all days for the range bar
+  // Compute per-day stats and overall temperature range in a single pass
+  const dayStats = {};
   let allLo = Infinity, allHi = -Infinity;
-  Object.values(byDay).forEach(entries => {
-    entries.forEach(t => {
-      const T = t.data.instant.details.air_temperature ?? 0;
-      if (T < allLo) allLo = T;
-      if (T > allHi) allHi = T;
-    });
-  });
-  const allRange = allHi - allLo || 1;
-
   Object.keys(byDay).sort().slice(0, 10).forEach(day => {
-    const entries = byDay[day];
     let lo = Infinity, hi = -Infinity;
-    let noonEntry = entries[0], bestDelta = Infinity;
-
-    entries.forEach(t => {
+    let noonEntry = byDay[day][0], bestDelta = Infinity;
+    byDay[day].forEach(t => {
       const T = t.data.instant.details.air_temperature ?? 0;
       if (T < lo) lo = T;
       if (T > hi) hi = T;
+      if (T < allLo) allLo = T;
+      if (T > allHi) allHi = T;
       const delta = Math.abs(new Date(t.time).getUTCHours() - 12);
       if (delta < bestDelta) { bestDelta = delta; noonEntry = t; }
     });
+    dayStats[day] = { lo, hi, noonEntry };
+  });
+  const allRange = allHi > allLo ? allHi - allLo : 1;
 
+  const renderToday = todayStr();
+  Object.keys(dayStats).forEach(day => {
+    const { lo, hi, noonEntry } = dayStats[day];
     const next = noonEntry.data.next_1_hours || noonEntry.data.next_6_hours || {};
     const sym  = getSym(next.summary?.symbol_code || '');
-    const isToday = day === todayStr();
+    const isToday = day === renderToday;
 
-    // Range bar percentages relative to all-days span
+    // Range bar percentages (0–100) relative to all-days span
     const loPct = Math.round(((lo - allLo) / allRange) * 100);
     const hiPct = Math.round(((hi - allLo) / allRange) * 100);
+    // Ensure bar always has a minimum visible width of 4%
+    const hiPctClamped = Math.max(hiPct, loPct + 4);
 
     const row = document.createElement('div');
     row.className = 'day-row';
@@ -689,9 +690,10 @@ function renderDaily(ts) {
       <span class="day-name${isToday ? ' today' : ''}">${dateLabel(day)}</span>
       <span class="day-icon" aria-hidden="true">${sym.e}</span>
       <span class="day-temp-lo">${Math.round(lo)}°</span>
-      <span class="day-range-bar"><span class="day-range-fill" style="left:${loPct}%;right:${100 - hiPct}%"></span></span>
+      <span class="day-range-bar"><span class="day-range-fill" style="left:${loPct}%;right:${100 - hiPctClamped}%"></span></span>
       <span class="day-temp-hi">${Math.round(hi)}°</span>
     `;
+    const entries = byDay[day];
     row.addEventListener('click', () => openDayDetail(day, entries));
     row.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' ') openDayDetail(day, entries); });
     D.dailyList.appendChild(row);

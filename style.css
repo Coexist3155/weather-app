@@ -29,11 +29,16 @@
   --shadow:       0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
   --shadow-card:  0 1px 4px rgba(0,0,0,0.10);
   --shadow-lg:    0 4px 16px rgba(0,0,0,0.12);
+  /* Temperature range bar */
+  --temp-bar-cold: #4fc3f7;
+  --temp-bar-hot:  #ff8a65;
   /* Shape */
   --radius:       16px;
   --radius-sm:    12px;
+  --radius-hero:  32px;
   --topbar-h:     60px;
-  /* Typography */
+  /* Typography — 'Google Sans' used when available (Android/ChromeOS);
+     falls back gracefully to system UI fonts on all other platforms */
   --font:         'Google Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-access:  Georgia, 'Times New Roman', serif;
   /* Motion */
@@ -346,16 +351,16 @@ ul { list-style: none; }
   overflow: hidden;
   animation: fadeIn 0.4s ease;
   /* Scalloped bottom using box-shadow trick */
-  border-radius: 0 0 32px 32px;
+  border-radius: 0 0 var(--radius-hero) var(--radius-hero);
 }
 
 #current-card::after {
   content: '';
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  height: 32px;
+  height: var(--radius-hero);
   background: var(--bg);
-  border-radius: 32px 32px 0 0;
+  border-radius: var(--radius-hero) var(--radius-hero) 0 0;
 }
 
 #current-icon-wrap { margin-bottom: 0.3rem; }
@@ -516,7 +521,7 @@ ul { list-style: none; }
   position: absolute;
   top: 0; bottom: 0;
   border-radius: 2px;
-  background: linear-gradient(90deg, #4fc3f7, #ff8a65);
+  background: linear-gradient(90deg, var(--temp-bar-cold), var(--temp-bar-hot));
 }
 
 /* ── DAY DETAIL ─────────────────────────────────────────── */
@@ -642,7 +647,7 @@ ul { list-style: none; }
 
 @media (min-width: 600px) {
   #main-content { max-width: 600px; width: 100%; margin: 0 auto; }
-  #current-card { border-radius: 0 0 var(--radius) var(--radius); }
+  #current-card { border-radius: 0 0 var(--radius-hero) var(--radius-hero); }
 }
 
 /* ── DARK MEDIA QUERY (when theme=auto) ─────────────────── */
