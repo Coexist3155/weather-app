@@ -1,6 +1,7 @@
 /* YrWeather — Service Worker (offline shell + network-first API) */
-const CACHE = 'yrweather-v2';
-const SHELL = ['/', '/index.html', '/style.css', '/app.js', '/manifest.json'];
+const CACHE = 'yrweather-v3';
+const SHELL = ['/', '/index.html', '/style.css', '/app.js', '/manifest.json',
+               '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(

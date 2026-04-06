@@ -26,8 +26,8 @@
         <button id="btn-search" class="icon-btn" aria-label="Search city" title="Search city">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
         </button>
-        <span id="city-name">Choose a city</span>
       </div>
+      <span id="city-name">Choose a city</span>
       <div id="topbar-right">
         <button id="btn-accessibility" class="icon-btn" aria-label="Toggle accessibility mode" title="Accessibility mode (astigmatism-friendly)" aria-pressed="false">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><path d="M12 6c-3.3 0-6 .9-6 2l1 8h3l1 5h2l1-5h3l1-8c0-1.1-2.7-2-6-2z"/></svg>
@@ -66,30 +66,18 @@
       <!-- Weather display -->
       <div id="weather-display" class="hidden">
 
-        <!-- Current conditions -->
+        <!-- Hero: current conditions -->
         <section id="current-card" aria-label="Current weather">
           <div id="current-icon-wrap" aria-hidden="true">
             <div id="current-icon" class="weather-icon-large"></div>
           </div>
-          <div id="current-info">
-            <div id="current-temp" aria-label="Temperature">--°C</div>
-            <div id="current-feels" aria-label="Feels like">Feels like --°C</div>
-            <div id="current-desc" aria-label="Weather description">--</div>
-            <div id="current-meta">
-              <span id="meta-wind" title="Wind speed">💨 --</span>
-              <span id="meta-wind-dir" title="Wind direction">🧭 --</span>
-              <span id="meta-humidity" title="Relative humidity">💧 --</span>
-              <span id="meta-pressure" title="Air pressure">🌡 --</span>
-              <span id="meta-precip" title="Precipitation">🌧 --</span>
-              <span id="meta-cloud" title="Cloud cover">☁️ --</span>
-              <span id="meta-uv" title="UV Index">☀️ UV --</span>
-              <span id="meta-vis" title="Visibility">👁 --</span>
-            </div>
-            <div id="sun-row">
-              <span id="sunrise-time" title="Sunrise">🌅 --</span>
-              <span id="sunset-time" title="Sunset">🌇 --</span>
-              <span id="moonrise-time" title="Moonrise">🌕 --</span>
-            </div>
+          <div id="current-temp" aria-label="Temperature">--°C</div>
+          <div id="current-desc" aria-label="Weather description">--</div>
+          <div id="current-feels" aria-label="Feels like">Feels like --°C</div>
+          <div id="current-hilo">
+            <span id="current-hi">H:--°</span>
+            <span class="hilo-sep"> · </span>
+            <span id="current-lo">L:--°</span>
           </div>
         </section>
 
@@ -114,6 +102,48 @@
             </button>
           </div>
           <div id="day-detail-scroll" role="list" aria-label="Hourly detail list"></div>
+        </section>
+
+        <!-- Details grid -->
+        <section id="details-section" aria-label="Weather details">
+          <h3 class="section-title">Details</h3>
+          <div id="current-meta">
+            <div class="detail-tile">
+              <span class="detail-label">Wind</span>
+              <span id="meta-wind" class="detail-value" title="Wind speed">--</span>
+              <span id="meta-wind-dir" class="detail-sub" title="Wind direction">--</span>
+            </div>
+            <div class="detail-tile">
+              <span class="detail-label">Humidity</span>
+              <span id="meta-humidity" class="detail-value" title="Relative humidity">--%</span>
+            </div>
+            <div class="detail-tile">
+              <span class="detail-label">UV Index</span>
+              <span id="meta-uv" class="detail-value" title="UV Index">--</span>
+            </div>
+            <div class="detail-tile">
+              <span class="detail-label">Pressure</span>
+              <span id="meta-pressure" class="detail-value" title="Air pressure">-- hPa</span>
+            </div>
+            <div class="detail-tile">
+              <span class="detail-label">Cloud Cover</span>
+              <span id="meta-cloud" class="detail-value" title="Cloud cover">--%</span>
+            </div>
+            <div class="detail-tile">
+              <span class="detail-label">Precipitation</span>
+              <span id="meta-precip" class="detail-value" title="Precipitation">0 mm</span>
+            </div>
+            <div class="detail-tile">
+              <span class="detail-label">Visibility</span>
+              <span id="meta-vis" class="detail-value" title="Visibility">--</span>
+            </div>
+            <div class="detail-tile">
+              <span class="detail-label">Sun &amp; Moon</span>
+              <span id="sunrise-time" class="detail-sub sun-line" title="Sunrise">🌅 --</span>
+              <span id="sunset-time" class="detail-sub sun-line" title="Sunset">🌇 --</span>
+              <span id="moonrise-time" class="detail-sub sun-line" title="Moon">🌕 --</span>
+            </div>
+          </div>
         </section>
 
         <!-- Attribution (MET Norway TOS requirement) -->

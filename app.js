@@ -173,6 +173,9 @@ D.btnRetry          = document.getElementById('btn-retry');
 D.lastUpdated       = document.getElementById('last-updated');
 D.canvas            = document.getElementById('weatherCanvas');
 D.body              = document.body;
+D.currentCard       = document.getElementById('current-card');
+D.currentHi         = document.getElementById('current-hi');
+D.currentLo         = document.getElementById('current-lo');
 
 // ── CANVAS ANIMATIONS ────────────────────────────────────
 const canvas = D.canvas;
@@ -556,6 +559,9 @@ function renderWeather(forecast, sunrise) {
   D.currentTemp.textContent = `${Math.round(inst.air_temperature ?? 0)}°C`;
   D.currentDesc.textContent = sym.l;
 
+  // Set weather type for hero gradient
+  D.currentCard.dataset.weather = sym.a;
+
   // Feels-like (dew point approximation isn't in the API; use wind chill if cold)
   const tC   = inst.air_temperature ?? 0;
   const wind = inst.wind_speed ?? 0;
@@ -564,16 +570,26 @@ function renderWeather(forecast, sunrise) {
     : Math.round(tC);
   D.currentFeels.textContent = `Feels like ${feels}°C`;
 
+  // Today H/L
+  const today = todayStr();
+  const todayTemps = ts
+    .filter(t => t.time.slice(0, 10) === today)
+    .map(t => t.data.instant.details.air_temperature ?? 0);
+  if (todayTemps.length) {
+    D.currentHi.textContent = `H:${Math.round(Math.max(...todayTemps))}°`;
+    D.currentLo.textContent = `L:${Math.round(Math.min(...todayTemps))}°`;
+  }
+
   // Meta
-  D.metaWind.textContent      = `💨 ${Math.round(wind)} m/s`;
-  D.metaWindDir.textContent   = `🧭 ${windDir(inst.wind_from_direction)}`;
-  D.metaHumidity.textContent  = `💧 ${Math.round(inst.relative_humidity ?? 0)}%`;
-  D.metaPressure.textContent  = inst.air_pressure_at_sea_level != null ? `🌡 ${Math.round(inst.air_pressure_at_sea_level)} hPa` : '🌡 --';
+  D.metaWind.textContent      = `${Math.round(wind)} m/s`;
+  D.metaWindDir.textContent   = windDir(inst.wind_from_direction) || '--';
+  D.metaHumidity.textContent  = `${Math.round(inst.relative_humidity ?? 0)}%`;
+  D.metaPressure.textContent  = inst.air_pressure_at_sea_level != null ? `${Math.round(inst.air_pressure_at_sea_level)} hPa` : '--';
   const precip = next1.details?.precipitation_amount;
-  D.metaPrecip.textContent    = precip != null ? `🌧 ${precip.toFixed(1)} mm` : '🌧 0 mm';
-  D.metaCloud.textContent     = inst.cloud_area_fraction != null ? `☁️ ${Math.round(inst.cloud_area_fraction)}%` : '☁️ --';
-  D.metaUv.textContent        = inst.ultraviolet_index_clear_sky != null ? `☀️ UV ${Math.round(inst.ultraviolet_index_clear_sky)}` : '☀️ UV --';
-  D.metaVis.textContent       = inst.fog_area_fraction != null ? `👁 ${(100 - inst.fog_area_fraction).toFixed(0)}% vis` : '👁 --';
+  D.metaPrecip.textContent    = precip != null ? `${precip.toFixed(1)} mm` : '0 mm';
+  D.metaCloud.textContent     = inst.cloud_area_fraction != null ? `${Math.round(inst.cloud_area_fraction)}%` : '--';
+  D.metaUv.textContent        = inst.ultraviolet_index_clear_sky != null ? `${Math.round(inst.ultraviolet_index_clear_sky)}` : '--';
+  D.metaVis.textContent       = inst.fog_area_fraction != null ? `${(100 - inst.fog_area_fraction).toFixed(0)}%` : '--';
 
   // Sunrise / sunset / moonrise
   const sp = sunrise?.properties;
@@ -632,24 +648,37 @@ function renderDaily(ts) {
     (byDay[day] = byDay[day] || []).push(t);
   });
 
+  // Compute per-day stats and overall temperature range in a single pass
+  const dayStats = {};
+  let allLo = Infinity, allHi = -Infinity;
   Object.keys(byDay).sort().slice(0, 10).forEach(day => {
-    const entries = byDay[day];
-    let lo = Infinity, hi = -Infinity, totalPrec = 0;
-    let noonEntry = entries[0], bestDelta = Infinity;
-
-    entries.forEach(t => {
+    let lo = Infinity, hi = -Infinity;
+    let noonEntry = byDay[day][0], bestDelta = Infinity;
+    byDay[day].forEach(t => {
       const T = t.data.instant.details.air_temperature ?? 0;
       if (T < lo) lo = T;
       if (T > hi) hi = T;
-      const next = t.data.next_1_hours || t.data.next_6_hours || {};
-      totalPrec += next.details?.precipitation_amount ?? 0;
+      if (T < allLo) allLo = T;
+      if (T > allHi) allHi = T;
       const delta = Math.abs(new Date(t.time).getUTCHours() - 12);
       if (delta < bestDelta) { bestDelta = delta; noonEntry = t; }
     });
+    dayStats[day] = { lo, hi, noonEntry };
+  });
+  const allRange = allHi > allLo ? allHi - allLo : 1;
 
+  const renderToday = todayStr();
+  Object.keys(dayStats).forEach(day => {
+    const { lo, hi, noonEntry } = dayStats[day];
     const next = noonEntry.data.next_1_hours || noonEntry.data.next_6_hours || {};
     const sym  = getSym(next.summary?.symbol_code || '');
-    const isToday = day === todayStr();
+    const isToday = day === renderToday;
+
+    // Range bar percentages (0–100) relative to all-days span
+    const loPct = Math.round(((lo - allLo) / allRange) * 100);
+    const hiPct = Math.round(((hi - allLo) / allRange) * 100);
+    // Ensure bar always has a minimum visible width of 4%
+    const hiPctClamped = Math.max(hiPct, loPct + 4);
 
     const row = document.createElement('div');
     row.className = 'day-row';
@@ -660,13 +689,11 @@ function renderDaily(ts) {
     row.innerHTML = `
       <span class="day-name${isToday ? ' today' : ''}">${dateLabel(day)}</span>
       <span class="day-icon" aria-hidden="true">${sym.e}</span>
-      <span class="day-desc">${sym.l}</span>
-      <span class="day-precip">${totalPrec > 0.05 ? totalPrec.toFixed(1)+'mm' : ''}</span>
-      <span class="day-temp-range">
-        <span class="day-temp-hi">${Math.round(hi)}°</span>
-        <span class="day-temp-lo">${Math.round(lo)}°</span>
-      </span>
+      <span class="day-temp-lo">${Math.round(lo)}°</span>
+      <span class="day-range-bar"><span class="day-range-fill" style="left:${loPct}%;right:${100 - hiPctClamped}%"></span></span>
+      <span class="day-temp-hi">${Math.round(hi)}°</span>
     `;
+    const entries = byDay[day];
     row.addEventListener('click', () => openDayDetail(day, entries));
     row.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' ') openDayDetail(day, entries); });
     D.dailyList.appendChild(row);
