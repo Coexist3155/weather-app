@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" id="meta-theme-color" content="#1a73e8" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="YrWeather" />
+  <title>YrWeather</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+</head>
+<body class="mode-normal" data-theme="auto">
+
+  <!-- Background animation canvas -->
+  <canvas id="weatherCanvas" aria-hidden="true"></canvas>
+
+  <div id="app">
+
+    <!-- TOP BAR -->
+    <header id="topbar">
+      <div id="topbar-left">
+        <button id="btn-search" class="icon-btn" aria-label="Search city" title="Search city">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+        </button>
+        <span id="city-name">Choose a city</span>
+      </div>
+      <div id="topbar-right">
+        <button id="btn-accessibility" class="icon-btn" aria-label="Toggle accessibility mode" title="Accessibility mode (astigmatism-friendly)" aria-pressed="false">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><path d="M12 6c-3.3 0-6 .9-6 2l1 8h3l1 5h2l1-5h3l1-8c0-1.1-2.7-2-6-2z"/></svg>
+        </button>
+        <button id="btn-theme" class="icon-btn" aria-label="Toggle dark/light mode" title="Toggle theme">
+          <svg viewBox="0 0 24 24" id="icon-theme"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- SEARCH PANEL -->
+    <div id="search-panel" class="hidden" role="dialog" aria-modal="true" aria-label="City search">
+      <div id="search-box">
+        <input id="search-input" type="search" placeholder="Type a city name…"
+               autocomplete="off" autocorrect="off" spellcheck="false"
+               aria-label="City search input" />
+        <button id="search-close" class="icon-btn" aria-label="Close search">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <ul id="search-results" role="listbox" aria-label="City search results"></ul>
+      <p id="search-hint">Search by city name — powered by OpenStreetMap</p>
+    </div>
+
+    <!-- MAIN -->
+    <main id="main-content">
+
+      <!-- Empty state -->
+      <section id="empty-state" aria-live="polite">
+        <div class="empty-icon">🌍</div>
+        <h2>Welcome to YrWeather</h2>
+        <p>Search for any city to get a live forecast, powered by the Norwegian Meteorological Institute.</p>
+        <button id="btn-start-search" class="primary-btn">Find a city</button>
+      </section>
+
+      <!-- Weather display -->
+      <div id="weather-display" class="hidden">
+
+        <!-- Current conditions -->
+        <section id="current-card" aria-label="Current weather">
+          <div id="current-icon-wrap" aria-hidden="true">
+            <div id="current-icon" class="weather-icon-large"></div>
+          </div>
+          <div id="current-info">
+            <div id="current-temp" aria-label="Temperature">--°C</div>
+            <div id="current-feels" aria-label="Feels like">Feels like --°C</div>
+            <div id="current-desc" aria-label="Weather description">--</div>
+            <div id="current-meta">
+              <span id="meta-wind" title="Wind speed">💨 --</span>
+              <span id="meta-wind-dir" title="Wind direction">🧭 --</span>
+              <span id="meta-humidity" title="Relative humidity">💧 --</span>
+              <span id="meta-pressure" title="Air pressure">🌡 --</span>
+              <span id="meta-precip" title="Precipitation">🌧 --</span>
+              <span id="meta-cloud" title="Cloud cover">☁️ --</span>
+              <span id="meta-uv" title="UV Index">☀️ UV --</span>
+              <span id="meta-vis" title="Visibility">👁 --</span>
+            </div>
+            <div id="sun-row">
+              <span id="sunrise-time" title="Sunrise">🌅 --</span>
+              <span id="sunset-time" title="Sunset">🌇 --</span>
+              <span id="moonrise-time" title="Moonrise">🌕 --</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Hourly – next 24h -->
+        <section id="hourly-section" aria-label="Hourly forecast">
+          <h3 class="section-title">Hourly Forecast</h3>
+          <div id="hourly-scroll" role="list" aria-label="Hourly forecast list"></div>
+        </section>
+
+        <!-- 10-day -->
+        <section id="daily-section" aria-label="10-day forecast">
+          <h3 class="section-title">10-Day Forecast</h3>
+          <div id="daily-list" role="list" aria-label="10-day forecast list"></div>
+        </section>
+
+        <!-- Day detail (hourly for selected day) -->
+        <section id="day-detail-section" class="hidden" aria-label="Hourly detail for selected day">
+          <div id="day-detail-header">
+            <h3 id="day-detail-title" class="section-title">Hourly – --</h3>
+            <button id="day-detail-close" class="icon-btn" aria-label="Close hourly detail">
+              <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div id="day-detail-scroll" role="list" aria-label="Hourly detail list"></div>
+        </section>
+
+        <!-- Attribution (MET Norway TOS requirement) -->
+        <footer id="attribution">
+          Weather data: <a href="https://www.yr.no" target="_blank" rel="noopener">Yr.no</a> /
+          <a href="https://www.met.no" target="_blank" rel="noopener">MET Norway</a>
+          &nbsp;·&nbsp; Updated: <span id="last-updated">--</span>
+        </footer>
+      </div>
+
+      <!-- Loading -->
+      <div id="loading-overlay" class="hidden" aria-live="assertive" aria-label="Loading weather data">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Loading weather…</p>
+      </div>
+
+      <!-- Error -->
+      <div id="error-state" class="hidden" role="alert">
+        <div class="error-icon">⚠️</div>
+        <p id="error-message">Something went wrong.</p>
+        <button id="btn-retry" class="primary-btn">Retry</button>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
