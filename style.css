@@ -44,9 +44,9 @@
   --w-mid:        #1976d2;
   --w-bot:        #42a5f5;
   /* Glass card surfaces */
-  --glass-bg:     rgba(255,255,255,0.13);
-  --glass-bg2:    rgba(255,255,255,0.08);
-  --glass-border: rgba(255,255,255,0.22);
+  --glass-bg:     rgba(0,0,0,0.22);
+  --glass-bg2:    rgba(0,0,0,0.18);
+  --glass-border: rgba(255,255,255,0.14);
   /* Weather text (white on colored bg) */
   --wtext:        #ffffff;
   --wtext2:       rgba(255,255,255,0.82);
@@ -200,8 +200,8 @@ ul { list-style: none; }
 
 /* Transparent topbar when weather is active */
 body.has-weather #topbar {
-  background: rgba(0,0,0,0.18);
-  border-bottom: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.22);
+  border-bottom: 1px solid rgba(255,255,255,0.10);
 }
 
 #topbar-left  { justify-self: start;  display: flex; align-items: center; }
@@ -480,7 +480,7 @@ body.has-weather .icon-btn:hover { background: rgba(255,255,255,0.15); }
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 28px rgba(0,0,0,0.30);
 }
 
 /* ── HOURLY STRIP ───────────────────────────────────────── */
@@ -511,7 +511,7 @@ body.has-weather .icon-btn:hover { background: rgba(255,255,255,0.15); }
   scroll-snap-align: start;
   transition: background var(--t), transform 0.13s;
 }
-.hour-chip:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+.hour-chip:hover { background: rgba(255,255,255,0.12); transform: translateY(-2px); }
 
 .h-time   { font-size: 0.68rem; font-weight: 600; color: var(--wtext3); }
 .h-icon   { font-size: 1.4rem; line-height: 1; }
@@ -520,8 +520,8 @@ body.has-weather .icon-btn:hover { background: rgba(255,255,255,0.15); }
 .h-precip { font-size: 0.62rem; color: rgba(140,210,255,1); }
 
 .hour-chip.now-chip {
-  background: rgba(255,255,255,0.28);
-  border-color: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.22);
+  border-color: rgba(255,255,255,0.50);
 }
 .now-chip .h-time  { color: var(--wtext2); }
 .now-chip .h-temp  { color: var(--wtext); }
@@ -537,13 +537,13 @@ body.has-weather .icon-btn:hover { background: rgba(255,255,255,0.15); }
   align-items: center;
   gap: 0.5rem;
   padding: 0.7rem 0.3rem;
-  border-bottom: 1px solid rgba(255,255,255,0.12);
+  border-bottom: 1px solid rgba(255,255,255,0.09);
   cursor: pointer;
   transition: background var(--t);
   border-radius: 8px;
 }
 .day-row:last-child  { border-bottom: none; }
-.day-row:hover  { background: rgba(255,255,255,0.1); }
+.day-row:hover  { background: rgba(255,255,255,0.08); }
 .day-row:active { opacity: 0.8; }
 
 .day-name       { font-size: 0.86rem; font-weight: 500; color: var(--wtext); }
@@ -575,7 +575,7 @@ body.has-weather .icon-btn:hover { background: rgba(255,255,255,0.15); }
   border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   padding: 1rem;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 28px rgba(0,0,0,0.30);
   margin-top: 0.75rem;
   display: flex;
   flex-direction: column;
@@ -602,7 +602,7 @@ body.has-weather .icon-btn:hover { background: rgba(255,255,255,0.15); }
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.09);
 }
 
 .detail-icon {
