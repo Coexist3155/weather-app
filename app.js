@@ -380,7 +380,7 @@ function stopAnim() {
 }
 
 // ── WEATHER BODY CLASS ───────────────────────────────────
-const WEATHER_CLASSES = ['weather-sunny', 'weather-night', 'weather-cloudy', 'weather-rain', 'weather-snow', 'weather-thunder', 'weather-fog'];
+const WEATHER_CLASSES = ['weather-sunny', 'weather-night', 'weather-cloudy', 'weather-rain', 'weather-snow', 'weather-thunder', 'weather-fog',];
 
 function applyWeatherClass(animType) {
   WEATHER_CLASSES.forEach(c => D.body.classList.remove(c));

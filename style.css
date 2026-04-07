@@ -62,7 +62,7 @@ body.weather-snow    { --w-top: #2c5f8a; --w-mid: #3a7cb5; --w-bot: #4a90c4; }
 body.weather-thunder { --w-top: #1a1a2e; --w-mid: #2d2d5c; --w-bot: #16213e; }
 body.weather-fog     { --w-top: #546e7a; --w-mid: #607d8b; --w-bot: #90a4ae; }
 
-/* Dark mode: slightly deepen the gradients */
+/* Dark mode: slightly deepen the gradients (explicit dark toggle via button, any system pref) */
 [data-theme="dark"].weather-sunny   { --w-top: #0d47a1; --w-mid: #1565c0; --w-bot: #1976d2; }
 [data-theme="dark"].weather-night   { --w-top: #060d14; --w-mid: #0a1c2e; --w-bot: #102640; }
 [data-theme="dark"].weather-cloudy  { --w-top: #263238; --w-mid: #37474f; --w-bot: #546e7a; }
@@ -728,7 +728,7 @@ body.has-weather .icon-btn:hover { background: rgba(255,255,255,0.15); }
     --shadow-lg:   0 4px 16px rgba(0,0,0,0.4);
   }
 
-  /* Auto dark mode: deepen weather gradients for prefers-color-scheme users */
+  /* Auto dark mode: deepen weather gradients for system-preference dark users (without explicit toggle) */
   body:not([data-theme="light"]).weather-sunny   { --w-top: #0d47a1; --w-mid: #1565c0; --w-bot: #1976d2; }
   body:not([data-theme="light"]).weather-night   { --w-top: #060d14; --w-mid: #0a1c2e; --w-bot: #102640; }
   body:not([data-theme="light"]).weather-cloudy  { --w-top: #263238; --w-mid: #37474f; --w-bot: #546e7a; }
