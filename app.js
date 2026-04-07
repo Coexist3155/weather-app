@@ -176,6 +176,7 @@ D.body              = document.body;
 D.currentCard       = document.getElementById('current-card');
 D.currentHi         = document.getElementById('current-hi');
 D.currentLo         = document.getElementById('current-lo');
+D.heroCityName      = document.getElementById('hero-city-name');
 
 // ── CANVAS ANIMATIONS ────────────────────────────────────
 const canvas = D.canvas;
@@ -378,6 +379,25 @@ function stopAnim() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
+// ── WEATHER BODY CLASS ───────────────────────────────────
+const WEATHER_CLASSES = ['weather-sunny','weather-night','weather-cloudy','weather-rain','weather-snow','weather-thunder','weather-fog'];
+
+function applyWeatherClass(animType) {
+  WEATHER_CLASSES.forEach(c => D.body.classList.remove(c));
+  if (animType) {
+    D.body.classList.add('has-weather', `weather-${animType}`);
+    // Update meta theme-color to match the top of the gradient
+    const colorMap = {
+      sunny: '#1565c0', night: '#0d1b2a', cloudy: '#455a64',
+      rain: '#263238', snow: '#2c5f8a', thunder: '#1a1a2e', fog: '#546e7a',
+    };
+    document.getElementById('meta-theme-color').content = colorMap[animType] || '#1565c0';
+  } else {
+    D.body.classList.remove('has-weather');
+    document.getElementById('meta-theme-color').content = '#1a73e8';
+  }
+}
+
 // ── THEME ────────────────────────────────────────────────
 const SUN_ICON  = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
 const MOON_ICON = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
@@ -485,6 +505,7 @@ function showErr(msg) {
   D.weatherDisplay.classList.add('hidden');
   D.emptyState.classList.add('hidden');
   D.errorMessage.textContent = msg;
+  applyWeatherClass(null);
   showLoad(false);
 }
 
@@ -561,6 +582,12 @@ function renderWeather(forecast, sunrise) {
 
   // Set weather type for hero gradient
   D.currentCard.dataset.weather = sym.a;
+
+  // Set full-page weather background and hero city name
+  applyWeatherClass(sym.a);
+  if (D.heroCityName && S.city) {
+    D.heroCityName.textContent = S.city.name;
+  }
 
   // Feels-like (dew point approximation isn't in the API; use wind chill if cold)
   const tC   = inst.air_temperature ?? 0;
